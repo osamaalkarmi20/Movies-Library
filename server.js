@@ -1,47 +1,191 @@
 const express = require('express');
-const data=require('./Movie Data/data.json')
+const data = require('./Movie Data/data.json')
 const server = express();
-
+const axios = require("axios");
+require('dotenv').config();
+const cors = require('cors');
+server.use(cors())
+const APIKey = process.env.apiKey;
 const PORT = 3000;
 
-server.get('/',(req,res)=>{
-    let mov1= new movieRef(data.title,data.poster_path,data.overview)
+//////////////////////////////////////////////////////////////////////////////
+//ALL SERVICES ///////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+server.get('/', homeHandler)
+
+server.get('/trending', trendingHandler)
+
+server.get('/search', searchHandler)
+
+server.get('/discover', discoverHandler)
+server.get('/favorite', favoriteHandler)
+server.get('/providers', providersHandler)
+
+//////////////////////////////////////////////////////////////////////////////
+//ERROR SERVICES /////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+server.get('/error', error500Handler)
+
+server.get('*', error400Handler)
+
+//////////////////////////////////////////////////////////////////////////////
+//HANDLERS ///////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+function homeHandler(req, res) {
+    let mov1 = new movieRef(data.title, data.poster_path, data.overview)
     res.status(200).send(mov1)
-  
-})
 
-server.get('/favorite',(req,res)=>{
-    str='Welcome to Favorite Page'
+}
+
+function favoriteHandler(req, res) {
+    str = 'Welcome to Favorite Page'
     res.status(200).send(str)
-})
+}
+function trendingHandler(req, res) {
+    const url = `https://api.themoviedb.org/3/trending/all/day?api_key=${APIKey}`
 
-server.get('/error', (req, res) => {
-    let error500={
+
+
+    axios.get(url)
+        .then(axiosResult => {
+
+            let mapResult = axiosResult.data.results.map(item => {
+                let singlemovie = new axiosTrending(item.id, item.title, item.release_date, item.poster_path, item.overview);
+                return singlemovie;
+            })
+            console.log(mapResult)
+            res.send(mapResult)
+
+        })
+        .catch((error) => {
+            console.log('sorry you have something error', error)
+            res.status(500).send(error);
+        })
+
+
+}
+function searchHandler(req, res) {
+    const url = `https://api.themoviedb.org/3/search/movie?api_key=${APIKey}&language=en-US&query=The&page=2`
+
+
+    axios.get(url)
+        .then(axiosResult => {
+            let mapResult = axiosResult.data.results.map(item => {
+                let singlemovie = new axiosSearch(item.id, item.title);
+                return singlemovie;
+            })
+            console.log(mapResult)
+            res.send(mapResult)
+
+        })
+        .catch((error) => {
+            console.log('sorry you have something error', error)
+            res.status(500).send("errpr");
+        })
+
+
+}
+
+function discoverHandler(req, res) {
+    const url = `https://api.themoviedb.org/3/discover/movie?api_key=${APIKey}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_watch_monetization_types=flatrate&primary_release_year=2023`
+
+
+    axios.get(url)
+        .then(axiosResult => {
+            let mapResult = axiosResult.data.results.map(item => {
+                let singlemovie = new axiosDiscover(item.id, item.title);
+                return singlemovie;
+            })
+            console.log(mapResult)
+            res.send(mapResult)
+
+        })
+        .catch((error) => {
+            console.log('sorry you have something error', error)
+            res.status(500).send("errpr");
+        })
+
+
+}
+ function providersHandler(req, res) {
+    const url = `
+    https://api.themoviedb.org/3/watch/providers/regions?api_key=${APIKey}&language=en-US`
+
+
+
+    axios.get(url)
+        .then(axiosResult => {
+            let mapResult = axiosResult.data.results.map(item => {
+                let singlemovie = new axiosProviders(item.iso_3166_1, item.native_name);
+                return singlemovie;
+            })
+            console.log(mapResult)
+            res.send(mapResult)
+
+        })
+        .catch((error) => {
+            console.log('sorry you have something error', error)
+            res.status(500).send("error");
+        })
+
+
+}
+
+function error500Handler(req, res) {
+    let error500 = {
         "status": 500,
 
-        "responseText" : 'Sorry, something went wrong'
+        "responseText": 'Sorry, something went wrong'
     }
     res.status(error500.status).send(error500);
-  });
-  
-  
-server.get('*',(req,res)=>{
-    let error400={
+}
+
+
+function error400Handler(req, res) {
+    let error400 = {
         "status": 400,
 
-        "responseText" : 'page not found error'
+        "responseText": 'page not found error'
     }
     res.status(error400.status).send(error400)
-})
-function movieRef(title,poster_path,overview){
-    this.title= title,
-    this.poster_path=poster_path,
-    this.overview=overview
-    
 }
 
 
 
-server.listen(PORT, ()=>{
+//////////////////////////////////////////////////////////////////////////////
+//CONSTRUCTOR FUNCTIONS///////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+function movieRef(title, poster_path, overview) {
+    this.title = title,
+        this.poster_path = poster_path,
+        this.overview = overview
+
+}
+
+function axiosProviders(iso_3166_1,native_name) {
+    this.iso_3166_1 = iso_3166_1;
+    this.native_name = native_name;
+}
+function axiosTrending(id, title, release_date, poster_path, overview) {
+    this.id = id;
+    this.title = title;
+    this.release_date = release_date;
+    this.poster_path = poster_path;
+    this.overview = overview;
+}
+function axiosDiscover(id, title) {
+    this.id = id;
+    this.title = title;
+
+}
+
+function axiosSearch(id, title) {
+    this.id = id;
+    this.title = title;
+
+}
+/////////////////////////////////////////////////////////////////////////
+server.listen(PORT, () => {
     console.log(`Listening on ${PORT}: I'm ready`)
 })
