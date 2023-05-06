@@ -3,8 +3,13 @@
 
 ## WRRC
 <img src="./wrrc/11.png"></img>
+
+**3th party wrrc**
 <img src="./wrrc/13.png"></img>
 <img src="./wrrc/14.png"></img>
+**database wrrc**
+<img src="./wrrc/15.png"></img>
+
 **Error WRRC**
 
 <img src="./wrrc/12.png"></img>
@@ -12,7 +17,7 @@
 simple project5 that is a server module for a basic movie library with a favorite page and a error massege if wrong request was sent .
 ## Getting Started
 to start this project you should install express
-"npm install express cors dotenv axios" then you could type on your ubantu "npm start" this will show a massege `Listening on 3000: I'm ready` 
+"npm install express cors dotenv axios pg" then you could type on your ubantu "npm start" this will show a massege `Listening on 3000: I'm ready` 
 and in this case you are setup right.
 ## Project Features
  go to your borwser and wirte `localhost:3000/`
@@ -30,6 +35,11 @@ and in this case you are setup right.
  
  
   if you typed `localhost:3000/providers` you will see an data that includes the providers short name as 2 letters and the natve name for the countrys that are providers.
+ 
+ 
+  if you typed `localhost:3000/addMovies` you will add data that includes the name and the info for the movie you want to add in the database use thunder extention and the post instead of get and type te add movie as a json file such as `{"nameofmove":"the name of the movie you want to add", "info":"the information of the movie you want to add"}` in the body to add if you add succsessfully you  will receive a massege "sent"  .
+ 
+if you typed `localhost:3000/getMovies` you will see the data that you add using `localhost:3000/addMovies`  in this you will use the normal get in thunder or your web browser.
  
 
 
