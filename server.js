@@ -1,13 +1,16 @@
 const express = require('express');
-const data = require('./Movie Data/data.json')
+const data = require('./Movie Data/data.json');
 const server = express();
 const axios = require("axios");
 require('dotenv').config();
 const cors = require('cors');
-server.use(cors())
+server.use(cors());
 const APIKey = process.env.apiKey;
 const PORT = 3000;
+const pg = require('pg');
 
+const client = new pg.Client(process.env.DATABASE_URL);
+server.use(express.json());
 //////////////////////////////////////////////////////////////////////////////
 //ALL SERVICES ///////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -20,6 +23,8 @@ server.get('/search', searchHandler)
 server.get('/discover', discoverHandler)
 server.get('/favorite', favoriteHandler)
 server.get('/providers', providersHandler)
+server.get('/getMovies', getMoviesHandler)
+server.post('/addMovies',addMoviesHandler)
 
 //////////////////////////////////////////////////////////////////////////////
 //ERROR SERVICES /////////////////////////////////////////////////////////////
@@ -130,6 +135,31 @@ function discoverHandler(req, res) {
 
 
 }
+function getMoviesHandler(req, res) {
+    const sql = `SELECT * FROM addedMv`;
+    client.query(sql)
+    .then(data=>{
+        res.send(data.rows);
+    })
+
+    .catch((error)=>{
+        errorHandler(error,req,res)
+    })
+}
+function addMoviesHandler(req, res) {
+    const movieadded = req.body;
+    console.log(movieadded);
+    const sql = `INSERT INTO addedMv (nameofmovie, info)
+    VALUES ($1, $2);`
+    const values = [movieadded.nameofmovie , movieadded.info]; 
+    client.query(sql,values)
+    .then(data=>{
+        res.send("sent");
+    })
+    .catch((error)=>{
+        errorHandler(error,req,res)
+    })
+}
 
 function error500Handler(req, res) {
     let error500 = {
@@ -150,7 +180,13 @@ function error400Handler(req, res) {
     res.status(error400.status).send(error400)
 }
 
-
+function errorHandler(error,req,res){
+    const err = {
+        status: 500,
+        message: error
+    }
+    res.status(500).send(err);
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //CONSTRUCTOR FUNCTIONS///////////////////////////////////////////////////////
@@ -185,7 +221,9 @@ function axiosSearch(id, title) {
     this.title = title;
 
 }
+
 /////////////////////////////////////////////////////////////////////////
-server.listen(PORT, () => {
+client.connect()
+.then(()=>{server.listen(PORT, () => {
     console.log(`Listening on ${PORT}: I'm ready`)
-})
+})})
