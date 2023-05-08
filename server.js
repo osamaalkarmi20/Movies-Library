@@ -136,7 +136,7 @@ function discoverHandler(req, res) {
 
 }
 function getMoviesHandler(req, res) {
-    const sql = `SELECT * FROM addedMv`;
+    const sql = `SELECT * FROM addedmv`;
     client.query(sql)
     .then(data=>{
         res.send(data.rows);
@@ -149,9 +149,9 @@ function getMoviesHandler(req, res) {
 function addMoviesHandler(req, res) {
     const movieadded = req.body;
     console.log(movieadded);
-    const sql = `INSERT INTO addedMv (nameofmovie, info)
-    VALUES ($1, $2);`
-    const values = [movieadded.nameofmovie , movieadded.info]; 
+    const sql = `INSERT INTO addedmv (title, release_date , poster_path, overview )
+    VALUES ($1, $2,$3,$4);`
+    const values = [movieadded.title , movieadded.release_date,movieadded.poster_path,movieadded.overview]; 
     client.query(sql,values)
     .then(data=>{
         res.send("sent");

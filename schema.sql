@@ -1,7 +1,9 @@
-DROP TABLE IF EXISTS addedMv;
-CREATE TABLE IF NOT EXISTS  addedMv (
+DROP TABLE IF EXISTS addedmv;
+CREATE TABLE IF NOT EXISTS  addedmv (
     id SERIAL PRIMARY KEY,
-    nameofmovie VARCHAR(255),
-    info VARCHAR(255)
+    title VARCHAR(255),
+    release_date VARCHAR(255), 
+   poster_path VARCHAR(255), 
+   overview VARCHAR(255)
    
-);
+)
