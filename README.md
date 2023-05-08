@@ -9,7 +9,8 @@
 <img src="./wrrc/14.png"></img>
 **database wrrc**
 <img src="./wrrc/15.png"></img>
-
+<img src="./wrrc/16.png"></img>
+<img src="./wrrc/17.png"></img>
 **Error WRRC**
 
 <img src="./wrrc/12.png"></img>
@@ -40,7 +41,10 @@ and in this case you are setup right.
   if you typed `localhost:3000/addMovies` you will add data that includes the name and the info for the movie you want to add in the database use thunder extention and the post instead of get and type te add movie as a json file such as `{"nameofmove":"the name of the movie you want to add", "info":"the information of the movie you want to add"}` in the body to add if you add succsessfully you  will receive a massege "sent"  .
  
 if you typed `localhost:3000/getMovies` you will see the data that you add using `localhost:3000/addMovies`  in this you will use the normal get in thunder or your web browser.
- 
+if you typed `localhost:3000/getMovies/id` you will see the data for this id that you shows  in this you will use the normal get in thunder or your web browser.
+
+  if you typed `localhost:3000/UPDATE/id` you will update overview for the id you choose if it updated succsessfully you  will receive a massege "UPDATED"  .
+  if you typed `localhost:3000/DELETE/id` you will delete  the id you choose if it deleted succsessfully you  will receive a massege "DELETED"  .
 
 
  if you typed any other path as example:

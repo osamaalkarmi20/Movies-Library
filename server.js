@@ -15,17 +15,16 @@ server.use(express.json());
 //ALL SERVICES ///////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 server.get('/', homeHandler)
-
 server.get('/trending', trendingHandler)
-
 server.get('/search', searchHandler)
-
 server.get('/discover', discoverHandler)
 server.get('/favorite', favoriteHandler)
 server.get('/providers', providersHandler)
 server.get('/getMovies', getMoviesHandler)
 server.post('/addMovies',addMoviesHandler)
-
+server.delete('/DELETE/:id',deleteMoviesHandler)
+server.get('/getMovies/:id', getMoviesByIdHandler)
+server.put('/UPDATE/:id',updateMoviesHandler)
 //////////////////////////////////////////////////////////////////////////////
 //ERROR SERVICES /////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -160,7 +159,48 @@ function addMoviesHandler(req, res) {
         errorHandler(error,req,res)
     })
 }
+function deleteMoviesHandler(req,res){
+    const id = req.params.id;
+    console.log(req.params);
+    const sql = `DELETE FROM addedmv WHERE id=${id};`
+    client.query(sql)
+    .then((data)=>{
+        res.send("DELETED")
+    })
+    .catch((error)=>{
+        errorHandler(error,req,res)
+    })
+}
+function getMoviesByIdHandler(req, res) {
+    const id= req.params.id;
+    console.log(id)
+    const sql = `SELECT * FROM addedmv
+    WHERE id=${id};`;
+    client.query(sql)
+    .then(data=>{
+        res.send(data.rows);
+    })
 
+    .catch((error)=>{
+        errorHandler(error,req,res)
+    })
+}
+function updateMoviesHandler(req,res){
+    
+    const {id} = req.params;
+    console.log(req.body);
+    const sql = `UPDATE addedmv
+    SET overview = $1
+    WHERE id = ${id};`
+    const {overview} = req.body;
+    const values = [overview];
+    client.query(sql,values).then((data)=>{
+        res.send("UPDATED")
+    })
+    .catch((error)=>{
+        errorHandler(error,req,res)
+    })
+}
 function error500Handler(req, res) {
     let error500 = {
         "status": 500,
